@@ -6,10 +6,66 @@
         <link rel="canonical" href="http://mrcoles.com/todo/"/>
         <link rel="stylesheet" href="style.css">
         <script src="lib/modernizr-2.5.3.js"></script>
+        <script type="text/javascript">
+        function detectOS() {
+            if (window.navigator.userAgent.indexOf("Linux")!=-1) 
+            {
+                document.title = "Linux // TODO Stack";
+                document.body.style.background = "#8C262B";
+            }
+            else
+            {
+                document.title = "Windows // TODO Stack";
+                document.body.style.background = "#466F88";
+            }
+        }
+        window.onload = detectOS;
+
+        var refresh_rate = 10; //<-- In seconds, change to your needs
+        var last_user_action = 0;
+        var has_focus = false;
+        var lost_focus_count = 0;
+        var focus_margin = 10; // If we lose focus more then the margin we want to refresh
+
+
+        function reset() {
+            last_user_action = 0;
+            console.log("Reset");
+        }
+
+        function windowHasFocus() {
+            has_focus = true;
+        }
+
+        function windowLostFocus() {
+            has_focus = false;
+            lost_focus_count++;
+            console.log(lost_focus_count + " <~ Lost Focus");
+        }
+
+        setInterval(function () {
+            last_user_action++;
+            refreshCheck();
+        }, 1000);
+
+        function refreshCheck() {
+            var focus = window.onfocus;
+            if ((last_user_action >= refresh_rate && !has_focus && document.readyState == "complete") || lost_focus_count > focus_margin) {
+                window.location.reload(); // If this is called no reset is needed
+                reset(); // We want to reset just to make sure the location reload is not called.
+            }
+
+        }
+        window.addEventListener("focus", windowHasFocus, false);
+        window.addEventListener("blur", windowLostFocus, false);
+        window.addEventListener("click", reset, false);
+        window.addEventListener("mousemove", reset, false);
+        window.addEventListener("keypress", reset, false);
+        </script>
     </head>
     <body>
         <div id="header"><div class="inner">
-                <h1>Stack</h1>
+                <h1>TODO Stack</h1>
                 <a class="add" href="#" onclick="return false" tabindex="0">+</a>
         </div></div>
         <div id="content"><div class="inner" id="tasks">
